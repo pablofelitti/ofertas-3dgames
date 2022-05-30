@@ -1,0 +1,33 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "hello world sample for NodeJS",
+  "main": "app.js",
+  "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "jest": {
+    "restoreMocks": true,
+    "clearMocks": true,
+    "resetMocks": true,
+    "preset": "jest-puppeteer"
+  },
+  "dependencies": {
+    "https": "^1.0.0",
+    "mysql2": "^2.3.3",
+    "chrome-aws-lambda": "^10.1.0",
+    "puppeteer-core": "^10.4.0",
+    "puppeteer": "^9.1.1"
+  },
+  "scripts": {
+    "local": "node -e \"require('./app').lambdaHandler({})\"",
+    "test": "jest /test"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1136.0",
+    "file-url": "^4.0.0",
+    "jest": "^27.0.6",
+    "jest-puppeteer": "^6.0.0",
+    "path": "^0.12.7"
+  }
+}
