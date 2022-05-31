@@ -4,7 +4,8 @@ Description: ofertas 3dgames
 
 Globals:
   Function:
-    Timeout: 40
+    Timeout: 60
+    MemorySize: 256
 
 Resources:
   Ofertas3dgamesFunction:
