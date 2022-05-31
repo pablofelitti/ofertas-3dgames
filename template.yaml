@@ -4,10 +4,10 @@ Description: ofertas 3dgames
 
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 40
 
 Resources:
-  MeliFullSalesFunction:
+  Ofertas3dgamesFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
@@ -25,10 +25,10 @@ Resources:
           SQS_QUEUE_URL: !ImportValue TelegramMessageQueueUrl
           ENVIRONMENT: prod
       Events:
-        MeliFullSalesSchedule:
+        Ofertas3dgamesSchedule:
           Type: Schedule
           Properties:
-            Schedule: 'rate(5 minute)'
+            Schedule: 'rate(5 minutes)'
             Name: Ofertas3dgamesSchedule
             Description: Ofertas 3dgames schedule
             Enabled: true

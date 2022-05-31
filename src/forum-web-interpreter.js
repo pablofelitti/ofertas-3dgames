@@ -1,11 +1,17 @@
 'use strict'
 
-const puppeteer = require("puppeteer");
+const chromium = require('chrome-aws-lambda')
 const foro3dGamesUtils = require("./forum-web-utils");
 
 async function loadPostsFromSite(pageNumber) {
 
-    const browser = await puppeteer.launch({ignoreHTTPSErrors: true, args: ['--no-sandbox']})
+    const browser = await chromium.puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: true,
+        ignoreHTTPSErrors: true,
+    })
 
     try {
         const page = await browser.newPage()

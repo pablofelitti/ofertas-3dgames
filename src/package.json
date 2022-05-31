@@ -13,11 +13,10 @@
     "preset": "jest-puppeteer"
   },
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "https": "^1.0.0",
     "mysql2": "^2.3.3",
-    "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^10.4.0",
-    "puppeteer": "^9.1.1"
+    "puppeteer-core": "^10.4.0"
   },
   "scripts": {
     "local": "node -e \"require('./app').lambdaHandler({})\"",
