@@ -1,37 +1,5 @@
-const AWS = require('aws-sdk')
-AWS.config.update({region: 'us-east-1'})
-const ssm = new AWS.SSM()
-const mysql = require('mysql2/promise')
 
-const getConnection = async function getConnection() {
-
-    const parameters = await getParameters()
-
-    const clientOptions = {
-        host: parameters.HOST,
-        user: parameters.USER,
-        password: parameters.PASSWORD,
-        database: parameters.DATABASE,
-        ssl: {
-            rejectUnauthorized: false
-        }
-    }
-
-    return mysql.createConnection(clientOptions)
-}
-
-const getParameters = async function () {
-    const query = {Path: "/applications-db"}
-    let ssmResponse = await ssm.getParametersByPath(query).promise();
-    return {
-        HOST: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/host')[0].Value,
-        USER: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/user')[0].Value,
-        PASSWORD: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/password')[0].Value,
-        DATABASE: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/database-3dgames')[0].Value
-    }
-}
-
-function loadLastPageProcessed(client) {
+export function loadLastPageProcessed(client) {
     return client
         .query('SELECT value from config where id = \'LAST_PAGE\'')
         .then(queryResult => {
@@ -41,7 +9,7 @@ function loadLastPageProcessed(client) {
         })
 }
 
-function loadLastPostProcessed(client) {
+export function loadLastPostProcessed(client) {
     return client
         .query('SELECT value from config where id = \'LAST_POST\'')
         .then(queryResult => {
@@ -51,7 +19,7 @@ function loadLastPostProcessed(client) {
         })
 }
 
-async function saveLastPost(client, post) {
+export async function saveLastPost(client, post) {
     try {
         await client.query('BEGIN')
         await client.query('insert into config (id, value) values (?, ?)', ['LAST_POST', post])
@@ -63,7 +31,7 @@ async function saveLastPost(client, post) {
     }
 }
 
-async function updateLastPost(client, post) {
+export async function updateLastPost(client, post) {
     try {
         await client.query('BEGIN')
         await client.query('update config set value = ? where id = \'LAST_POST\'', [post])
@@ -75,7 +43,7 @@ async function updateLastPost(client, post) {
     }
 }
 
-async function updateLastPage(client, page) {
+export async function updateLastPage(client, page) {
     try {
         await client.query('BEGIN')
         await client.query('update config set value = ? where id = \'LAST_PAGE\'', [page])
@@ -87,7 +55,7 @@ async function updateLastPage(client, page) {
     }
 }
 
-async function saveLastPage(client, page) {
+export async function saveLastPage(client, page) {
     try {
         await client.query('BEGIN')
         await client.query('insert into config (id, value) values (?, ?)', ['LAST_PAGE', page])
@@ -99,7 +67,7 @@ async function saveLastPage(client, page) {
     }
 }
 
-async function loadLastPageConfig(client) {
+export async function loadLastPageConfig(client) {
     return client
         .query('SELECT value from config where id = \'LAST_PAGE\'')
         .then(queryResult => {
@@ -108,12 +76,3 @@ async function loadLastPageConfig(client) {
             }
         })
 }
-
-exports.loadLastPageConfig = loadLastPageConfig
-exports.loadLastPageProcessed = loadLastPageProcessed
-exports.loadLastPostProcessed = loadLastPostProcessed
-exports.saveLastPost = saveLastPost
-exports.updateLastPost = updateLastPost
-exports.updateLastPage = updateLastPage
-exports.saveLastPage = saveLastPage
-exports.getConnection = getConnection

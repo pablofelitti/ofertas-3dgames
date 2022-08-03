@@ -1,4 +1,4 @@
-async function getBodyFromPost(page) {
+export async function getBodyFromPost(page) {
     try {
         await page.waitForSelector('[id^=\'post_\'].postcontainer', {timeout: 5000})
     } catch (error) {
@@ -119,7 +119,7 @@ async function getBodyFromPost(page) {
     )
 }
 
-async function openPage(page, firstPage) {
+export async function openPage(page, firstPage) {
     await page.setJavaScriptEnabled(false)
     return await page.goto('https://foros.3dgames.com.ar/threads/942062-ofertas-online-argentina/page' + firstPage, {
         waitUntil: 'load',
@@ -140,8 +140,3 @@ async function removeQuotesFromPage(page) {
 async function getIdFromPost(posts, i) {
     return await (await posts[i].getProperty('id')).jsonValue()
 }
-
-exports.getBodyFromPost = getBodyFromPost
-exports.removeQuotesFromPage = removeQuotesFromPage
-exports.openPage = openPage
-exports.getIdFromPost = getIdFromPost

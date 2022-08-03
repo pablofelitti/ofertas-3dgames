@@ -1,32 +1,50 @@
 # ofertas-3dgames
 
-Lambda that checks for new posts in a specific thread in 3dgames for sales
+* Checks for new posts in a specific thread in 3dgames forum that contain potentially good deals 
+and sends a notification to a Telegram group
 
-## Installation
+Contents
+========
 
-### To run locally with nodejs
+* [Why?](#why)
+* [Usage](#usage)
+* [Deployment](#deployment)
 
-`cd src`
+### Why?
 
-`npm install`
+I needed a way to:
+* Be notified of a post with a potential good deal as soon as 
+* Avoid having to manually go through all the posts
+* Save time to do other stuff :)
 
-`npm run start:local`
+### Usage
 
-### To build and run the lambda locally:
+#### To run local node (no lambda)
 
-`cd src`
+```
+cd src
+npm install
+npm run start:local
+```
 
-`npm install --only=prod`
+#### To build and run the lambda in local:
 
-`sam build`
+```
+cd src
+npm install --only=prod
+sam build
+sam local invoke
+```
 
-`sam local invoke`
+### Deployment
 
-## Deployment
+> **Warning**
+> This requires AWS access to deploy using SAM
 
-`sam build`
-
-`sam deploy`
+```
+sam build
+sam deploy
+```
 
 ## TODO list
 

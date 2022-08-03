@@ -9,12 +9,12 @@ let loadPostsFromSiteMock = jest.fn()
 describe("Posts are retrieved", function () {
 
     beforeEach(function () {
-        forumWebInterpreter = jest.mock('../forum-web-interpreter', () => {
+        forumWebInterpreter = jest.mock('../forum-web-interpreter.mjs', () => {
             return {
                 loadPostsFromSite: loadPostsFromSiteMock
             }
         })
-        forumDao = jest.mock('../forum-dao', () => {
+        forumDao = jest.mock('../forum-dao.mjs', () => {
             return {
                 getConnection: function () {
                     return {
@@ -39,7 +39,7 @@ describe("Posts are retrieved", function () {
                 updateLastPost: updateLastPostMock
             }
         });
-        forumService = require('../forum-service')
+        forumService = require('../forum-service.mjs')
     })
 
     it("return only new post from same page", async function () {

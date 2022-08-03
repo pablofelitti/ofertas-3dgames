@@ -5,12 +5,12 @@ let loadPostsFromSiteMock = jest.fn()
 describe("Posts are loaded from the site", function () {
 
     beforeEach(function () {
-        forumWebInterpreter = jest.mock('../forum-web-interpreter', () => {
+        forumWebInterpreter = jest.mock('../forum-web-interpreter.mjs', () => {
             return {
                 loadPostsFromSite: loadPostsFromSiteMock
             }
         })
-        forumDao = jest.mock('../forum-dao', () => {
+        forumDao = jest.mock('../forum-dao.mjs', () => {
             return {
                 getConnection: function () {
                     return {
@@ -26,7 +26,7 @@ describe("Posts are loaded from the site", function () {
                 }
             }
         })
-        processService = require('../forum-service')
+        processService = require('../forum-service.mjs')
     })
 
     it('returns new post from the next page but there is no next page', async function () {

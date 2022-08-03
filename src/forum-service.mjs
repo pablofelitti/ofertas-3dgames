@@ -1,15 +1,21 @@
-const forumWebInterpreter = require('./forum-web-interpreter')
-const forumDao = require('./forum-dao')
+import {loadPostsFromSite} from "./forum-web-interpreter.mjs"
+import {
+    loadLastPageConfig,
+    loadLastPageProcessed,
+    loadLastPostProcessed,
+    saveLastPage,
+    updateLastPage,
+    updateLastPost
+} from "./forum-dao.mjs"
 
 function getLastItemId(lastPostsFromSite) {
     return lastPostsFromSite[lastPostsFromSite.length - 1].id
 }
 
-async function readNewPosts() {
-    let client = await forumDao.getConnection()
+export async function readNewPosts(client) {
     let lastPageProcessed = await getLastPageProcessed(client)
     let lastPostIdProcessed = await getLastPostProcessed(client)
-    let lastPostsFromSite = await forumWebInterpreter.loadPostsFromSite(lastPageProcessed)
+    let lastPostsFromSite = await loadPostsFromSite(lastPageProcessed)
 
     console.log('Starting to read new posts...')
     console.log('Last page processed: ' + lastPageProcessed)
@@ -32,7 +38,7 @@ async function processReceivedPosts(lastPostsFromSite, lastPageProcessed, lastPo
     if (lastPostIdJustRead === lastPostIdProcessed) {
         let nextPageToBeRead = lastPageProcessed + 1
         console.log('Last post read is the same as the last one notified, checking next page: ' + nextPageToBeRead)
-        let nextPosts = await forumWebInterpreter.loadPostsFromSite(nextPageToBeRead)
+        let nextPosts = await loadPostsFromSite(nextPageToBeRead)
         if (nextPosts.length === 0) {
             console.log('No posts in next page')
             return {
@@ -70,7 +76,7 @@ async function processReceivedPosts(lastPostsFromSite, lastPageProcessed, lastPo
 }
 
 async function getLastPostProcessed(client) {
-    let result = await forumDao.loadLastPostProcessed(client)
+    let result = await loadLastPostProcessed(client)
 
     if (!result) {
         result = 0;
@@ -80,7 +86,7 @@ async function getLastPostProcessed(client) {
 }
 
 async function getLastPageProcessed(client) {
-    let result = await forumDao.loadLastPageProcessed(client)
+    let result = await loadLastPageProcessed(client)
 
     if (!result) {
         result = 1
@@ -90,27 +96,25 @@ async function getLastPageProcessed(client) {
 }
 
 async function saveLastPostRead(client, post) {
-    const lastPostConfig = await forumDao.loadLastPostProcessed(client)
+    const lastPostConfig = await loadLastPostProcessed(client)
 
     if (lastPostConfig.length === 0) {
         console.log('No LAST_POST configured, will save ' + post)
-        await forumDao.saveLastPost(client, post)
+        await (client, post)
     } else {
         console.log('Will update LAST_POST configured, will save ' + post)
-        await forumDao.updateLastPost(client, post)
+        await updateLastPost(client, post)
     }
 }
 
 async function saveLastPageRead(client, page) {
-    const lastPageConfig = await forumDao.loadLastPageConfig(client)
+    const lastPageConfig = await loadLastPageConfig(client)
 
     if (lastPageConfig.length === 0) {
         console.log('No LAST_PAGE configured, will save ' + page)
-        await forumDao.saveLastPage(client, page)
+        await saveLastPage(client, page)
     } else {
         console.log('Will update LAST_PAGE configured, will save ' + page)
-        await forumDao.updateLastPage(client, page)
+        await updateLastPage(client, page)
     }
 }
-
-exports.readNewPosts = readNewPosts

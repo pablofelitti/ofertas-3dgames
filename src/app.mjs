@@ -1,7 +1,7 @@
-const AWS = require('aws-sdk')
-AWS.config.update({region: 'us-east-1'})
-const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
-const forumService = require('./forum-service')
+import {SQSClient} from "@aws-sdk/client-sqs"
+import {readNewPosts} from "./forum-service.mjs"
+import mysql from "mysql2/promise"
+import {GetParametersByPathCommand, SSMClient} from "@aws-sdk/client-ssm"
 
 function createMessage(newPost) {
     return newPost.messages.reduce((result, message) => {
@@ -19,8 +19,25 @@ function filterPosts(newPosts) {
     return newPosts.filter(post => post.messages.filter(msg => msg.post_type === "link").length > 0);
 }
 
-exports.lambdaHandler = async (event, context) => {
-    let newPosts = await forumService.readNewPosts()
+
+const ssmClient = new SSMClient({region: 'us-east-1'})
+const command = new GetParametersByPathCommand({Path: "/applications-db"})
+const ssmResponse = await ssmClient.send(command)
+
+const clientOptions = {
+    host: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/host')[0].Value,
+    user: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/user')[0].Value,
+    password: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/password')[0].Value,
+    database: ssmResponse.Parameters.filter(it => it.Name === '/applications-db/database-3dgames')[0].Value,
+    ssl: {
+        rejectUnauthorized: false
+    }
+}
+
+let dbClient = await mysql.createConnection(clientOptions)
+
+export async function handler() {
+    let newPosts = await readNewPosts(dbClient)
 
     let filteredPosts = filterPosts(newPosts)
 
@@ -48,6 +65,6 @@ async function sendQueue(data) {
     }
 
     console.log('sending message')
-    await sqs.sendMessage(sqsOrderData).promise();
+    await new SQSClient({region: 'us-east-1'}).sendMessage(sqsOrderData);
     console.log('message sent')
 }

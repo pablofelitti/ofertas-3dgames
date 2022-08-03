@@ -1,9 +1,7 @@
-'use strict'
+import chromium from "chrome-aws-lambda"
+import {getBodyFromPost, openPage} from "./forum-web-utils.mjs"
 
-const chromium = require('chrome-aws-lambda')
-const foro3dGamesUtils = require("./forum-web-utils");
-
-async function loadPostsFromSite(pageNumber) {
+export async function loadPostsFromSite(pageNumber) {
 
     const browser = await chromium.puppeteer.launch({
         args: chromium.args,
@@ -15,9 +13,9 @@ async function loadPostsFromSite(pageNumber) {
 
     try {
         const page = await browser.newPage()
-        await foro3dGamesUtils.openPage(page, pageNumber)
+        await openPage(page, pageNumber)
 
-        const posts = await foro3dGamesUtils.getBodyFromPost(page)
+        const posts = await getBodyFromPost(page)
 
         browser.close().then(() => console.log('Browser closed'))
         return posts
@@ -28,5 +26,3 @@ async function loadPostsFromSite(pageNumber) {
         return []
     }
 }
-
-exports.loadPostsFromSite = loadPostsFromSite

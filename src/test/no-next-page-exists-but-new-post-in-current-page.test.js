@@ -7,12 +7,12 @@ let loadPostsFromSiteMock = jest.fn()
 describe("New post appears when next page is requested", function () {
 
     beforeEach(function () {
-        forumWebInterpreter = jest.mock('../forum-web-interpreter', () => {
+        forumWebInterpreter = jest.mock('../forum-web-interpreter.mjs', () => {
             return {
                 loadPostsFromSite: loadPostsFromSiteMock
             }
         })
-        forumDao = jest.mock('../forum-dao', () => {
+        forumDao = jest.mock('../forum-dao.mjs', () => {
             return {
                 getConnection: function () {
                     return {
@@ -39,7 +39,7 @@ describe("New post appears when next page is requested", function () {
                 }
             }
         });
-        processService = require('../forum-service')
+        processService = require('../forum-service.mjs')
     })
 
     //This happens because when you load the new page, if it does not exist, then the same content of the last page is retrieved
