@@ -1,4 +1,4 @@
-import {SQSClient} from "@aws-sdk/client-sqs"
+import {SQSClient, SendMessageCommand} from "@aws-sdk/client-sqs"
 import {readNewPosts} from "./forum-service.mjs"
 import mysql from "mysql2/promise"
 import {GetParametersByPathCommand, SSMClient} from "@aws-sdk/client-ssm"
@@ -19,7 +19,6 @@ function filterPosts(newPosts) {
     return newPosts.filter(post => post.messages.filter(msg => msg.post_type === "link").length > 0);
 }
 
-
 const ssmClient = new SSMClient({region: 'us-east-1'})
 const command = new GetParametersByPathCommand({Path: "/applications-db"})
 const ssmResponse = await ssmClient.send(command)
@@ -34,9 +33,8 @@ const clientOptions = {
     }
 }
 
-let dbClient = await mysql.createConnection(clientOptions)
-
 export async function handler() {
+    let dbClient = await mysql.createConnection(clientOptions)
     let newPosts = await readNewPosts(dbClient)
 
     let filteredPosts = filterPosts(newPosts)
@@ -65,6 +63,6 @@ async function sendQueue(data) {
     }
 
     console.log('sending message')
-    await new SQSClient({region: 'us-east-1'}).sendMessage(sqsOrderData);
+    await new SQSClient({region: 'us-east-1'}).send(new SendMessageCommand(sqsOrderData));
     console.log('message sent')
 }

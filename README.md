@@ -19,19 +19,7 @@ I needed a way to:
 
 ### Usage
 
-#### To run local node (no lambda)
-
 ```
-cd src
-npm install
-npm run start:local
-```
-
-#### To build and run the lambda in local:
-
-```
-cd src
-npm install --only=prod
 sam build
 sam local invoke
 ```
@@ -39,14 +27,12 @@ sam local invoke
 ### Deployment
 
 > **Warning**
-> This requires AWS access to deploy using SAM
+> This requires proper AWS access to deploy using SAM
 
 ```
-sam build
 sam deploy
 ```
 
 ## TODO list
 
-- [ ] Speed up Lambda cold start by initializing stuff outside handler
-- [ ] Reduce application logic by enhancing queries
+- [] Reduce application logic by enhancing queries
