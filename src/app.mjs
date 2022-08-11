@@ -34,14 +34,18 @@ const clientOptions = {
 }
 
 export async function handler() {
-    let dbClient = await mysql.createConnection(clientOptions)
-    let newPosts = await readNewPosts(dbClient)
+    try {
+        let dbClient = await mysql.createConnection(clientOptions)
+        let newPosts = await readNewPosts(dbClient)
 
-    let filteredPosts = filterPosts(newPosts)
+        let filteredPosts = filterPosts(newPosts)
 
-    for (let post of filteredPosts) {
-        let message = createMessage(post)
-        await sendQueue(message);
+        for (let post of filteredPosts) {
+            let message = createMessage(post)
+            await sendQueue(message);
+        }
+    } catch (e) {
+        console.error(e)
     }
 }
 

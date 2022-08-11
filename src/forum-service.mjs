@@ -1,20 +1,14 @@
 import {loadPostsFromSite} from "./forum-web-interpreter.mjs"
-import {
-    loadLastPageConfig,
-    loadLastPageProcessed,
-    loadLastPostProcessed,
-    saveLastPage,
-    updateLastPage,
-    updateLastPost
-} from "./forum-dao.mjs"
+import {loadConfig, updateLastPage, updateLastPost} from "./forum-dao.mjs"
 
 function getLastItemId(lastPostsFromSite) {
     return lastPostsFromSite[lastPostsFromSite.length - 1].id
 }
 
 export async function readNewPosts(client) {
-    let lastPageProcessed = await getLastPageProcessed(client)
-    let lastPostIdProcessed = await getLastPostProcessed(client)
+    let config = await getLastPageProcessed(client)
+    let lastPostIdProcessed = config.lastPost
+    let lastPageProcessed = config.lastPage
     let lastPostsFromSite = await loadPostsFromSite(lastPageProcessed)
 
     console.log('Starting to read new posts...')
@@ -34,7 +28,8 @@ export async function readNewPosts(client) {
 }
 
 async function processReceivedPosts(lastPostsFromSite, lastPageProcessed, lastPostIdProcessed) {
-    let lastPostIdJustRead = getLastItemId(lastPostsFromSite);
+    let lastPostIdJustRead = getLastItemId(lastPostsFromSite)
+    console.log('Last post id just read: ' + lastPostIdJustRead)
     if (lastPostIdJustRead === lastPostIdProcessed) {
         let nextPageToBeRead = lastPageProcessed + 1
         console.log('Last post read is the same as the last one notified, checking next page: ' + nextPageToBeRead)
@@ -61,60 +56,35 @@ async function processReceivedPosts(lastPostsFromSite, lastPageProcessed, lastPo
             }
         }
     } else if (lastPostIdJustRead > lastPostIdProcessed) {
+        console.log('New posts to notify read from last page')
         lastPostsFromSite = lastPostsFromSite
             .filter(it => it.id > lastPostIdProcessed)
-        console.log('New posts to notify read from last page')
         return {
             nextPosts: lastPostsFromSite.filter(it => it.id > lastPostIdProcessed),
             lastPostRead: getLastItemId(lastPostsFromSite)
         }
     } else {
+
         return {
             nextPosts: [],
         }
     }
 }
 
-async function getLastPostProcessed(client) {
-    let result = await loadLastPostProcessed(client)
-
-    if (!result) {
-        result = 0;
-    }
-
-    return result
-}
-
 async function getLastPageProcessed(client) {
-    let result = await loadLastPageProcessed(client)
-
-    if (!result) {
-        result = 1
+    try {
+        return await loadConfig(client)
+    } catch (e) {
+        return 1
     }
-
-    return result
 }
 
 async function saveLastPostRead(client, post) {
-    const lastPostConfig = await loadLastPostProcessed(client)
-
-    if (lastPostConfig.length === 0) {
-        console.log('No LAST_POST configured, will save ' + post)
-        await (client, post)
-    } else {
-        console.log('Will update LAST_POST configured, will save ' + post)
-        await updateLastPost(client, post)
-    }
+    console.log('Will update LAST_POST configured, will save ' + post)
+    await updateLastPost(client, post)
 }
 
 async function saveLastPageRead(client, page) {
-    const lastPageConfig = await loadLastPageConfig(client)
-
-    if (lastPageConfig.length === 0) {
-        console.log('No LAST_PAGE configured, will save ' + page)
-        await saveLastPage(client, page)
-    } else {
-        console.log('Will update LAST_PAGE configured, will save ' + page)
-        await updateLastPage(client, page)
-    }
+    console.log('Will update LAST_PAGE configured, will save ' + page)
+    await updateLastPage(client, page)
 }
