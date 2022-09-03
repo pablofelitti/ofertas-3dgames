@@ -2,6 +2,7 @@ import {SQSClient, SendMessageCommand} from "@aws-sdk/client-sqs"
 import {readNewPosts} from "./forum-service.mjs"
 import mysql from "mysql2/promise"
 import {GetParametersByPathCommand, SSMClient} from "@aws-sdk/client-ssm"
+import {ForumDao} from "./forum-dao.mjs"
 
 function createMessage(newPost) {
     return newPost.messages.reduce((result, message) => {
@@ -36,7 +37,8 @@ const clientOptions = {
 export async function handler() {
     try {
         let dbClient = await mysql.createConnection(clientOptions)
-        let newPosts = await readNewPosts(dbClient)
+        const dao = new ForumDao(dbClient)
+        let newPosts = await readNewPosts()
 
         let filteredPosts = filterPosts(newPosts)
 

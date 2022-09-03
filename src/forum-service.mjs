@@ -1,5 +1,4 @@
 import {loadPostsFromSite} from "./forum-web-interpreter.mjs"
-import {loadConfig, updateLastPage, updateLastPost} from "./forum-dao.mjs"
 
 function getLastItemId(lastPostsFromSite) {
     return lastPostsFromSite[lastPostsFromSite.length - 1].id
@@ -73,7 +72,7 @@ async function processReceivedPosts(lastPostsFromSite, lastPageProcessed, lastPo
 
 async function getLastPageProcessed(client) {
     try {
-        return await loadConfig(client)
+        return await ForumDao.loadConfig(client)
     } catch (e) {
         return 1
     }
@@ -81,10 +80,10 @@ async function getLastPageProcessed(client) {
 
 async function saveLastPostRead(client, post) {
     console.log('Will update LAST_POST configured, will save ' + post)
-    await updateLastPost(client, post)
+    await ForumDao.updateLastPost(client, post)
 }
 
 async function saveLastPageRead(client, page) {
     console.log('Will update LAST_PAGE configured, will save ' + page)
-    await updateLastPage(client, page)
+    await ForumDao.updateLastPage(client, page)
 }
