@@ -1,15 +1,19 @@
-import chromium from "chrome-aws-lambda"
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import {getBodyFromPost, openPage} from "./forum-web-utils.mjs"
+
+chromium.setHeadlessMode = true;
+chromium.setGraphicsMode = false;
 
 export async function loadPostsFromSite(pageNumber) {
 
-    const browser = await chromium.puppeteer.launch({
+    const browser = await puppeteer.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath,
-        headless: true,
-        ignoreHTTPSErrors: true,
-    })
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true
+    });
 
     try {
         const page = await browser.newPage()
