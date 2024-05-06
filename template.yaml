@@ -11,9 +11,7 @@ Resources:
   Ofertas3dgamesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: app.handler
-      Runtime: nodejs18.x
+      PackageType: Image
       Architectures:
         - x86_64
       Policies:
@@ -33,3 +31,7 @@ Resources:
             Name: Ofertas3dgamesSchedule
             Description: Ofertas 3dgames schedule
             Enabled: true
+    Metadata:
+      DockerTag: nodejs18.x-v1
+      DockerContext: ./
+      Dockerfile: Dockerfile

@@ -33,7 +33,7 @@ const clientOptions = {
     }
 }
 
-export async function handler() {
+export async function lambdaHandler() {
     try {
         let dbClient = await mysql.createConnection(clientOptions)
         let newPosts = await readNewPosts(dbClient)

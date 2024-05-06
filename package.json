@@ -2,7 +2,7 @@
   "name": "ofertas-3dgames",
   "version": "1.0.0",
   "description": "Ofertas 3DGames parser",
-  "main": "app.mjs",
+  "main": "src/app.mjs",
   "author": "SAM CLI",
   "license": "MIT",
   "dependencies": {
